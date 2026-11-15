@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dry Run | One More Sol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="dryrun.css">
+</head>
+<body>
+
+<div id="game-screen">
+  <div class="wrap">
+    <header>
+      <div class="h-left">
+        <button type="button" id="back-to-menu" class="back">&larr; Menu</button>
+        <b class="logo">One More Sol</b>
+      </div>
+
+      <!-- 120-Second (4-Sol) Day/Night Solar Cycle Pill with Live Countdown -->
+      <div class="solar-pill" id="solar-pill" aria-live="polite">
+        <span class="solar-orb" id="solar-orb">☀️</span>
+        <div class="solar-meta">
+          <span class="solar-lbl" id="solar-lbl">DAY (50s) · Solar 100%</span>
+          <div class="solar-track"><i class="solar-fill" id="solar-fill"></i></div>
+        </div>
+      </div>
+
+      <!-- Physical 1-Item Carry Status Pill (Click or Press Q to Drop) -->
+      <button type="button" id="carry-pill" class="carry-pill" hidden title="Click or press Q to drop carried resource">
+        <span id="carry-txt">🎒 Holding: Item [Q to drop]</span>
+      </button>
+
+      <div class="h-right">
+        <span id="src" class="badge">Checking NASA DONKI&hellip;</span>
+        <button type="button" id="game-pause" class="g-btn" aria-label="Pause simulation">⏸ Pause</button>
+        <button type="button" id="game-mute" class="g-btn" aria-label="Mute sound">🔊</button>
+      </div>
+    </header>
+
+    <section class="hud" aria-label="Outpost status">
+      <div class="m" id="m-power"><label>⚡ Power <b></b></label><i><u></u></i></div>
+      <div class="m" id="m-oxygen"><label>🌬️ Oxygen <b></b></label><i><u></u></i></div>
+      <div class="m" id="m-shield"><label>🛡️ Shield <b></b></label><i><u></u></i></div>
+      <div class="m" id="m-dose"><label>☢️ Crew dose <b></b></label><i><u></u></i></div>
+      <div class="m sol"><label id="sol">Sol 1 / 5</label><span id="sci">🔬 0 · 🪨 0</span></div>
+    </section>
+
+    <div id="alert" class="alert" role="status">Walk to a glowing station and press E, or tap it.</div>
+
+    <div class="stage">
+      <canvas id="c" width="880" height="500" aria-label="Top-down deckplan of the outpost"></canvas>
+      <div id="ov" class="ov" hidden>
+        <div class="card">
+          <h2 id="ot">Choose your mission</h2>
+          <p id="op">Pick a site, crew role, and spacecraft deckplan.</p>
+          <div id="synergy-badge" class="synergy-badge" hidden></div>
+          <div id="commendations" class="commendations" hidden></div>
+          <div id="debrief" class="debrief" hidden></div>
+          <div id="setup-controls">
+            <div class="row">
+              <button type="button" class="chip on" data-site="mars">🔴 Mars · Jezero Crater</button>
+              <button type="button" class="chip" data-site="moon">🌕 Moon · Shackleton Crater</button>
+            </div>
+            <div class="row" id="dry-ships"></div>
+            <div id="dry-roles" class="roles"></div>
+            <div id="rd" class="rd"></div>
+          </div>
+          <div class="row">
+            <button type="button" id="resume-btn" class="btn alt" hidden>▶ Resume Mission</button>
+            <button type="button" id="replay" class="btn alt" hidden>🔄 Replay Same Loadout</button>
+            <button type="button" id="go" class="btn">🚀 Change Loadout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="hint">Move: WASD / Arrows or Tap &nbsp;·&nbsp; Grab / Work / Overcharge: E / Space or Tap &nbsp;·&nbsp; Drop Item: Q &nbsp;·&nbsp; Pause: P / Esc</p>
+    <footer>Space weather: NASA DONKI (api.nasa.gov). If the live feed is unreachable, storms are simulated and the badge says so.</footer>
+  </div>
+</div>
+
+<script src="dryrun.js"></script>
+</body>
+</html>

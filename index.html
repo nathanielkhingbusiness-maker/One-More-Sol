@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One More Sol | NASA Junior Astronaut Mission Trainer</title>
+<meta name="description" content="Command one of 6 sci-fi deckplan starships on the Moon or Mars for 5 sols. Equip role-specific hats, balance life support, and run physical grab-and-carry exterior EVAs against real NASA DONKI solar storms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="boot-intro" role="dialog" aria-label="One More Sol is starting" tabindex="-1">
+  <canvas id="boot-warp" aria-hidden="true"></canvas>
+  <div class="boot-sweep" aria-hidden="true"></div>
+  <div class="boot-vignette" aria-hidden="true"></div>
+  <i class="boot-corner tl" aria-hidden="true"></i><i class="boot-corner tr" aria-hidden="true"></i>
+  <i class="boot-corner bl" aria-hidden="true"></i><i class="boot-corner br" aria-hidden="true"></i>
+  <div class="boot-tag tl" aria-hidden="true">NASA Space Apps 2026</div>
+  <div class="boot-tag tr" aria-hidden="true">Sublime Horizons</div>
+
+  <div class="boot-stack">
+    <div class="boot-ring" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="bootGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#00ff88"/></linearGradient>
+          <radialGradient id="bootSunG"><stop offset="0" stop-color="#fff7c2"/><stop offset=".5" stop-color="#ffd166"/><stop offset="1" stop-color="rgba(255,209,102,0)"/></radialGradient>
+        </defs>
+        <g class="r-spin" id="boot-ticks"></g>
+        <circle class="r-spin-r" cx="100" cy="100" r="80" fill="none" stroke="rgba(0,240,255,.45)" stroke-width="1.4" stroke-dasharray="2 7"/>
+        <circle cx="100" cy="100" r="68" fill="none" stroke="rgba(0,240,255,.14)" stroke-width="5"/>
+        <circle id="boot-arc" cx="100" cy="100" r="68" fill="none" stroke="url(#bootGrad)" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="427.26" stroke-dashoffset="427.26" transform="rotate(-90 100 100)"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="rgba(56,189,248,.3)" stroke-width="1" stroke-dasharray="3 4"/>
+        <circle cx="100" cy="100" r="46" fill="none" stroke="rgba(251,146,60,.3)" stroke-width="1" stroke-dasharray="3 4"/>
+        <circle class="r-sun" cx="100" cy="100" r="15" fill="url(#bootSunG)"/>
+        <g class="r-earth"><circle cx="130" cy="100" r="4" fill="#38bdf8"/><circle cx="130" cy="100" r="7.5" fill="none" stroke="rgba(56,189,248,.45)"/></g>
+        <g class="r-mars"><circle cx="146" cy="100" r="3.4" fill="#fb923c"/></g>
+        <path d="M100 4 v8 M100 188 v8 M4 100 h8 M188 100 h8" stroke="#00f0ff" stroke-width="1.6" opacity=".8"/>
+      </svg>
+    </div>
+    <h1 class="boot-title">One More Sol</h1>
+    <div class="boot-sub">Junior Astronaut Mission Trainer</div>
+    <div class="boot-meter">
+      <div class="boot-meter-row"><span>Systems check</span><b id="boot-pct">0%</b></div>
+      <div class="boot-track"><div class="boot-fill" id="boot-fill"></div></div>
+    </div>
+    <div class="boot-log" id="boot-log" aria-hidden="true"></div>
+  </div>
+
+  <div class="boot-hint" aria-hidden="true">Press any key to skip</div>
+  <button type="button" class="boot-skip" id="boot-skip">Skip ▸</button>
+</div>
+
+<div id="menu-screen">
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <canvas id="planet" aria-hidden="true"></canvas>
+  <div class="holo-grid" aria-hidden="true"></div>
+
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <span class="nasa">NASA Space Apps 2026</span>
+        <span class="team">Sublime Horizons · Mabini Colleges, Inc.</span>
+      </div>
+      <div class="tools">
+        <span id="data-badge" class="badge"><i class="dot"></i><span>Checking NASA DONKI…</span></span>
+        <button id="mute" class="icon-btn" aria-label="Mute sound">🔊</button>
+      </div>
+    </header>
+
+    <nav id="steps" class="steps" aria-label="Mission setup" hidden>
+      <ol>
+        <li><button type="button" class="step-pill" data-step="site">1 · Site</button></li>
+        <li><button type="button" class="step-pill" data-step="role">2 · Role</button></li>
+        <li><button type="button" class="step-pill" data-step="ship">3 · Ship</button></li>
+        <li><button type="button" class="step-pill" data-step="brief">4 · Brief</button></li>
+      </ol>
+    </nav>
+
+    <main>
+      <!-- LANDING -->
+      <section id="v-landing" class="view center">
+        <p class="eyebrow">Junior Astronaut Mission Trainer</p>
+        <h1 class="title" tabindex="-1">One More Sol</h1>
+        <p class="lead">Command one of 6 hyper-detailed glowing deckplan starships on the Moon or Mars for 5 sols. Equip role-specific headwear, balance life support, and run physical grab-and-carry exterior EVAs against real NASA DONKI solar storms.</p>
+        <div class="actions">
+          <button class="btn primary" data-go="site">🚀 Start mission</button>
+          <button class="btn ghost" id="open-manual">📖 How to play</button>
+        </div>
+        <button class="link" id="demo">⚡ Judge demo: jump to a solar storm</button>
+        <div class="panel live" aria-live="polite">
+          <b>🛰️ REAL SPACE WEATHER TELEMETRY</b>
+          <p id="live-text">Asking NASA DONKI for the latest solar eruptions…</p>
+          <small>A <abbr title="Coronal mass ejection">CME</abbr> is a giant burst of magnetized plasma from the Sun. It spikes radiation across unshielded worlds.</small>
+        </div>
+        <ul class="chips">
+          <li>🛸 6 Deckplan Starships</li>
+          <li>🎩 Custom Role Hats</li>
+          <li>☀️ 120s Day/Night Cycle</li>
+          <li>🎒 Physical 1-Item EVA Carry</li>
+        </ul>
+      </section>
+
+      <!-- STEP 1: SITE -->
+      <section id="v-site" class="view" hidden>
+        <h2 tabindex="-1">Choose your landing site</h2>
+        <div class="grid2">
+          <button class="pick site" data-site="mars" aria-pressed="true">
+            <span class="big">🔴 Jezero Crater, Mars</span>
+            <span class="sub">18.4°N, 77.6°E · Ancient River Delta</span>
+            <span class="txt">Where NASA's Perseverance rover landed in 2021 beside sedimentary fan deposits that once held liquid water.</span>
+            <span class="txt">A Martian <b>sol</b> lasts 24 h 39 min, and radio signals to Earth take 3 to 22 minutes each way.</span>
+            <span class="twist">In the game: tighter 9s storm warning due to radio lag, and dusty solar panels that reduce solar charging.</span>
+          </button>
+          <button class="pick site" data-site="moon" aria-pressed="false">
+            <span class="big">🌕 Shackleton Crater, Moon</span>
+            <span class="sub">89.9°S · Lunar South Pole Rim</span>
+            <span class="txt">Permanently shadowed craters near the south pole trap water ice—the primary target for NASA's Artemis missions.</span>
+            <span class="txt">Radio signals to Earth take only 1.3 seconds, while frigid lunar nights severely tax thermal systems.</span>
+            <span class="twist">In the game: extended 16s early storm warning, stronger solar charging, and steeper cold battery drain.</span>
+          </button>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" data-go="landing">← Back</button>
+          <button class="btn primary" data-go="role">Choose role →</button>
+        </div>
+      </section>
+
+      <!-- STEP 2: ROLE -->
+      <section id="v-role" class="view" hidden>
+        <h2 tabindex="-1">Choose your crew role</h2>
+        <div id="roles" class="roles"></div>
+        <div class="panel detail" aria-live="polite">
+          <div class="holo" id="r-holo"></div>
+          <div>
+            <h3 id="r-name"></h3>
+            <p><b>Signature headgear:</b> <span id="r-hat"></span></p>
+            <p><b>Real job:</b> <span id="r-real"></span></p>
+            <p><b>In this game:</b> <span id="r-perk"></span></p>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" data-go="site">← Back</button>
+          <button class="btn primary" data-go="ship">Choose ship →</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: SHIP (6 Top-Down Deckplan Spaceships) -->
+      <section id="v-ship" class="view" hidden>
+        <h2 tabindex="-1">Choose your spacecraft deckplan</h2>
+        <div id="ships" class="ships-grid"></div>
+        <div class="panel detail" aria-live="polite">
+          <div class="holo" id="s-holo"></div>
+          <div>
+            <h3 id="s-name"></h3>
+            <p><b>Deckplan architecture:</b> <span id="s-real"></span></p>
+            <p><b>Flight stats &amp; perk:</b> <span id="s-perk"></span></p>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" data-go="role">← Back</button>
+          <button class="btn primary" data-go="brief">Mission brief →</button>
+        </div>
+      </section>
+
+      <!-- STEP 4: BRIEF -->
+      <section id="v-brief" class="view" hidden>
+        <h2 tabindex="-1">Mission brief</h2>
+        <p class="lead left" id="b-summary"></p>
+        <div class="panel detail">
+          <div class="holo" id="b-holo"></div>
+          <div>
+            <span class="ai">🤖 Mission Companion AI</span>
+            <p class="speech" id="b-hello"></p>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h3>How to play</h3>
+            <ol class="list">
+              <li>Walk your ship deckplan with <b>WASD</b>, arrow keys, or by tapping/clicking anywhere.</li>
+              <li>Stand near an indoor station and press <b>E</b> / <b>Space</b> (or tap it) to work—tap again inside the cyan arc (55%–82%) to <b>Overcharge</b>!</li>
+              <li>Walk down the ship's <b>Airlock ramp</b> onto the surface and press <b>E</b> / tap an exterior node to <b>instantly grab 1 resource</b>, then haul it back inside to deposit it (or press <b>Q</b> to drop it).</li>
+              <li>Keep Power and Oxygen above zero and Crew Dose below 100% for 5 sols (30s each).</li>
+            </ol>
+          </div>
+          <div class="panel">
+            <h3>The trade-offs</h3>
+            <ul class="list">
+              <li>☀️ 120s (4-Sol) Day/Night cycle: 60s daylight (100% solar output) and 60s night (20% solar output).</li>
+              <li>🎒 You can only carry <b>one resource at a time</b> outdoors, and heavy samples slightly slow your sprint unless you are the EVA Specialist.</li>
+              <li>⚡ Raising shields and scrubbing CO₂ both draw from your ship's battery bank.</li>
+              <li>☢️ Radiation dose never resets on its own—treat exposure in the Medical Bay.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">Real NASA data: solar storm intensity scales with the number of CMEs logged by NASA DONKI in the last 30 days. If offline, storms are simulated.</p>
+        <div class="actions">
+          <button class="btn ghost" data-go="ship">← Back</button>
+          <button class="btn red" id="launch">▶ Enter the base</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>Space weather: NASA DONKI (api.nasa.gov). Game numbers are simplified for learning. Made for the NASA International Space Apps Challenge. Not endorsed by NASA.</footer>
+  </div>
+
+  <dialog id="manual">
+    <h3>📖 How to play</h3>
+    <p><b>Welcome, cadet!</b> You command a landed starship outpost where every engineering choice is a trade-off.</p>
+    <ul class="list">
+      <li>🛸 <b>6 Deckplan Ships:</b> Each spacecraft features its own custom interior floor plan, boarding ramp, and performance perks.</li>
+      <li>🎩 <b>Role Gear:</b> Every role wears a signature space-grade hat on both your briefing hologram and outpost astronaut sprite.</li>
+      <li>🎒 <b>1-Item Physical EVA Carry:</b> Grab exterior ice cores, meteorite fragments, fuel cells, or telemetry pods (1 at a time) and carry them back inside the Airlock to stow! Press <b>Q</b> to drop a carried item if a storm hits.</li>
+      <li>⚡ <b>Power vs. shield &amp; air:</b> electromagnetic shielding and CO₂ scrubbers both consume electricity.</li>
+    </ul>
+    <p>A <b>sol</b> is one planetary day (30 seconds). A <b>CME</b> is a solar plasma burst, and <b>dose</b> tracks cumulative crew radiation exposure.</p>
+    <form method="dialog"><button class="btn primary">Got it</button></form>
+  </dialog>
+</div>
+
+<div id="cutscene-root" class="cs-hidden" role="dialog" aria-modal="true" aria-label="Mission launch sequence">
+  <canvas id="cutscene-canvas" aria-label="Cinematic rocket launch and interplanetary transit animation"></canvas>
+  <!-- Live Aerospace Telemetry HUD (Active during cutscene playback) -->
+  <div id="telemetry-hud" class="cs-hidden">
+    <!-- Top Row: Mission Designation & Phase Callout + Sound & Skip Controls -->
+    <div class="hud-top-row">
+      <div class="aero-panel hud-mission-card">
+        <div class="hud-mission-header">
+          <span class="status-dot"></span>
+          <span id="hud-mission-code" class="hud-mission-code">MARS MISSION // TMI (+44.4°)</span>
+        </div>
+        <div class="hud-phase-row">
+          <span id="hud-phase-badge" class="hud-phase-badge">IGNITION &amp; LIFTOFF</span>
+          <span id="hud-phase-sub" class="hud-phase-sub">Umbilical retraction &amp; main engine thrust buildup</span>
+        </div>
+      </div>
+
+      <div class="hud-controls-group">
+        <button type="button" id="btn-audio-toggle" class="aero-panel hud-btn" aria-label="Toggle synthesized audio">
+          SOUND ON
+        </button>
+        <button type="button" id="btn-skip-cutscene" class="aero-panel hud-btn hud-btn-skip">
+          SKIP &raquo;
+        </button>
+      </div>
+    </div>
+
+    <!-- Center-Top Completion Banner (Appears smoothly at T+19.2s) -->
+    <div id="hud-capture-banner" class="aero-panel cs-hidden">
+      <div class="capture-kicker">CAPTURE BURN NOMINAL</div>
+      <div id="hud-capture-title" class="capture-title">ORBITAL INSERTION COMPLETE</div>
+    </div>
+
+    <!-- Bottom Section: Compact Astrodynamics Transfer Radar + Telemetry Strip & 20s Progress Bar -->
+    <div class="hud-bottom-stack">
+      <!-- Astrodynamics Transfer Radar (Visible during 10.5s -> 20.0s) -->
+      <div id="astro-radar-panel" class="aero-panel cs-hidden">
+        <div class="radar-header">
+          <span id="radar-title" class="radar-title">HELIOCENTRIC HOHMANN</span>
+          <span id="radar-subtitle" class="radar-subtitle">1.00 → 1.524 AU</span>
+        </div>
+        <div class="radar-body">
+          <canvas id="astro-radar-canvas" width="288" height="288"></canvas>
+          <div class="radar-legend">
+            <div class="legend-row">
+              <span class="legend-dot" style="background: #fef08a;"></span>
+              <span id="radar-center-label" style="color: #e2e8f0;">SOL (0.00 AU)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot" style="background: #38bdf8;"></span>
+              <span id="radar-origin-label" style="color: #7dd3fc;">EARTH (1.00 AU)</span>
+            </div>
+            <div class="legend-row">
+              <span id="radar-target-dot" class="legend-dot" style="background: #fb923c;"></span>
+              <span id="radar-target-label" style="color: #fdba74;">MARS (1.524 AU)</span>
+            </div>
+            <div class="radar-stats">
+              <div id="radar-phase-readout">WINDOW: +44.4°</div>
+              <div id="radar-tof-readout">DAY 0 / 259</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Telemetry Bar -->
+      <div class="aero-panel telemetry-bar">
+        <div class="telemetry-grid">
+          <div>
+            <div class="tel-label">MET</div>
+            <div id="tel-met" class="tel-value val-amber">T+ 00:00.0</div>
+          </div>
+          <div>
+            <div class="tel-label">ALTITUDE</div>
+            <div id="tel-alt" class="tel-value val-sky">0.0 km</div>
+          </div>
+          <div>
+            <div class="tel-label">VELOCITY</div>
+            <div id="tel-vel" class="tel-value val-emerald">0.00 km/s</div>
+          </div>
+          <div>
+            <div class="tel-label">STAGE</div>
+            <div id="tel-stage" class="tel-value val-white">STAGE 1</div>
+          </div>
+          <div>
+            <div class="tel-label">TARGET DIST</div>
+            <div id="tel-dist" class="tel-value val-purple">78.34M km</div>
+          </div>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-meta">
+            <span>EARTH PAD 39A</span>
+            <span id="tel-timeline-status" class="timeline-status">0% · T-00:20.0 REMAINING</span>
+            <span id="tel-target-label">MARS ORBIT (1.524 AU)</span>
+          </div>
+          <div class="timeline-track">
+            <div id="tel-progress-fill"></div>
+          </div>
+          <div class="timeline-ticks">
+            <span>0s IGN</span>
+            <span>5s MAX-Q</span>
+            <span>7s SEP</span>
+            <span>9s FAIRING</span>
+            <span>11s TRANSIT</span>
+            <span>16s RETRO</span>
+            <span>20s ORBIT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
